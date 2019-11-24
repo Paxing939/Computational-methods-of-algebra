@@ -1,0 +1,17 @@
+﻿  1.cpp
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(9,20): warning C4018: <: несоответствие типов со знаком и без знака
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(45,13): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(62,21): warning C4018: <: несоответствие типов со знаком и без знака
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(63,22): warning C4018: <: несоответствие типов со знаком и без знака
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(65,37): warning C4244: =: преобразование "int" в "_Ty", возможна потеря данных
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(65,37): warning C4244:         with
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(65,37): warning C4244:         [
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(65,37): warning C4244:             _Ty=float
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(65,37): warning C4244:         ]
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(80,35): warning C4244: =: преобразование "double" в "_Ty", возможна потеря данных
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(80,35): warning C4244:         with
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(80,35): warning C4244:         [
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(80,35): warning C4244:             _Ty=float
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(80,35): warning C4244:         ]
+E:\BSU-Labs\ВМА\1 Лаба\1.cpp(83,21): warning C4018: <: несоответствие типов со знаком и без знака
+  1 Лаба.vcxproj -> E:\BSU-Labs\ВМА\Debug\1 Лаба.exe
