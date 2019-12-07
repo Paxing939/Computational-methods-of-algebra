@@ -1,66 +1,8 @@
-#include <iostream>
-#include <vector>
 #include <cmath>
 #include <iomanip>
-#include <fstream>
+#include "Functions.h"
 
-//double R(double x) {
-//	int k = 1000;
-//	return round(x * k) / (double)k;
-//}
-double R(double x) { return x; }
-
-double CountInfelicity(std::vector<double> x_de_ure, std::vector<double> x_de_facto) {
-	double sum_x2 = 0, sum_x = 0;
-	for (int i = 0; i < x_de_facto.size(); i++) {
-		sum_x2 += x_de_facto[i] * x_de_facto[i];
-		sum_x += (x_de_facto[i] - x_de_ure[i]) * (x_de_facto[i] - x_de_ure[i]);
-	}
-	return sum_x / sum_x2;
-}
-
-void LogMatrix(std::vector<std::vector<double>> matrix) {
-	std::ofstream fout("logs.txt", std::ios::app);
-	for (const auto& vec : matrix) {
-		for (auto& el : vec) {
-			fout << el << '\t';
-		}
-		fout << std::endl;
-	}
-	fout << std::endl << std::endl;
-	fout.close();
-}
-
-void LogVector(std::vector<double> vector) {
-	std::ofstream fout("logs.txt", std::ios::app);
-	for (const auto& el : vector) {
-		fout << el << '\t';
-	}
-	fout << std::endl << std::endl;
-	fout.close();
-}
-
-std::vector<std::vector<double>> MultMatrix(std::vector<std::vector<double>> a, std::vector<std::vector<double>> b_) {
-	std::vector<std::vector<double>> c(a.size());
-	for (int i = 0; i < a.size(); i++) {
-		c[i].resize(b_[i].size());
-		for (int j = 0; j < b_[i].size(); j++) {
-			c[i][j] = 0;
-			for (int k = 0; k < a[i].size(); k++)
-				c[i][j] += a[i][k] * b_[k][j];
-		}
-	}
-	return c;
-}
-
-void PrintMatrix(const std::vector<std::vector<double>>& matrix) {
-	for (const std::vector<double>& vec : matrix) {
-		for (const double& x_ : vec) {
-			std::cout << std::setw(7) << std::setprecision(2) << std::left << x_ << " ";
-		}
-		std::cout << std::endl;
-	}
-}
+double RoundNothing(double x) { return x; }
 
 class Matrix {
 public:
@@ -106,7 +48,6 @@ public:
 			}
 		}
 
-		// переписываем матрицу ј с к = 0
 		matrix_k_0_ = matrix_;
 
 		double sum_1_col_k_0 = (double)sum_1_line;
@@ -125,31 +66,20 @@ public:
 		for (int i = 0; i < n; i++) {
 			x_.push_back(m + i);
 		}
-		// с помощью умножени€ матриц находим вектора b
-		b_ = MultMat(x_, matrix_);
-		b_k_0_ = MultMat(x_, matrix_k_0_);
-		// пишем исходные матрицы в файл
+		// multiply x_ on matrix to get vector b
+		// if after Gauss method answer vector and x_ will be the same
+		// then we will know method works correctly
+		b_ = MultMat(matrix_, x_);
+		b_k_0_ = MultMat(matrix_k_0_, x_);
+
+		// write matrices in the logs.txt
 		LogMatrix(matrix_);
 		LogMatrix(matrix_k_0_);
 	}
 
-	// функци€ умножени€ матриц
-	std::vector<double> MultMat(std::vector<double> a, std::vector<std::vector<double>> matrix) {
-		std::vector<double> c(matrix.size());
-
-		for (int i = 0; i < matrix.size(); i++) {
-			c[i] = 0;
-			for (int k = 0; k < matrix.size(); k++) {
-				c[i] += matrix[i][k] * a[k];
-			}
-		}
-		return c;
-	}
-
-	// функци€ решени€
 	std::pair<std::vector<double>, std::vector<double>> Solve() {
 		int line_length = matrix_.size();
-		// запол€нем матрицу гаусса
+
 		std::vector<std::vector<double>> matrix_transform(line_length);
 		std::vector<std::vector<double>> matrix_transform_k_0(line_length);
 		for (int i = 0; i < line_length; ++i) {
@@ -167,7 +97,7 @@ public:
 			}
 		}
 
-		// пр€мой ход гаусса
+		// forward
 		D_.resize(line_length);
 		D_k_0_.resize(line_length);
 		for (int k = 0; k < line_length; k++) {
@@ -175,21 +105,22 @@ public:
 			D_[k][k] = matrix_transform[k][k];
 			D_k_0_[k].resize(line_length);
 			D_k_0_[k][k] = matrix_transform_k_0[k][k];
-
+			std::vector<double> t(line_length), t0(line_length);
 			for (int i = k + 1; i < line_length; i++) {
-				double t_k_0 = R(matrix_transform_k_0[i][k] / matrix_transform_k_0[k][k]);
-				matrix_transform_k_0[i][k] = t_k_0;
-				double t = R(matrix_transform[i][k] / matrix_transform[k][k]);
-				matrix_transform[i][k] = t;
+				t0[i] = matrix_transform_k_0[i][k];
+				matrix_transform_k_0[i][k] = matrix_transform_k_0[i][k] / matrix_transform_k_0[k][k];
 
-				for (int j = k + 1; j < line_length; ++j) {
-					matrix_transform[i][j] -= R(matrix_transform[k][j] * t);
-					matrix_transform_k_0[i][j] -= R(matrix_transform_k_0[k][j] * t_k_0);
+				t[i] = matrix_transform[i][k];
+				matrix_transform[i][k] = matrix_transform[i][k] / matrix_transform[k][k];
+
+				for (int j = k + 1; j <= i; j++) {
+					matrix_transform[i][j] -= matrix_transform[i][k] * t[j];
+					matrix_transform_k_0[i][j] -= matrix_transform_k_0[i][k] * t0[j];
 				}
 			}
 		}
 
-		// заполн€ем L из D
+		// L and D
 		std::vector<std::vector<double>> Lt(matrix_.size()), Lt_k_0(matrix_k_0_.size());
 		L_.resize(matrix_.size());
 		L_k_0_.resize(matrix_.size());
@@ -210,7 +141,7 @@ public:
 			}
 		}
 
-		// транспонируем матрицу L
+		// transpose L
 		for (int i = 0; i < line_length; ++i) {
 			Lt[i].resize(line_length, 0);
 			Lt_k_0[i].resize(line_length, 0);
@@ -226,43 +157,40 @@ public:
 				}
 			}
 		}
-
-		// выводим в консоль L 
+ 
 		std::cout << "Matrixs L_ and Lt with k = 2:";
 		PrintMatrix(L_); PrintMatrix(Lt);
 		std::cout << std::endl << "Matrixs L_ and Lt with k = 0:";
 		PrintMatrix(L_k_0_); PrintMatrix(Lt_k_0);
 
-		// обратный ход гаусса
-		// решаем уравнение Ly = b
+		// back and solve Ly = b
 		std::vector<double> y(L_.size()), y_k_0(L_k_0_.size());
 		for (int i = 0; i < L_.size(); i++) {
 			y[i] = b_[i];
 			y_k_0[i] = b_k_0_[i];
 			for (int j = i - 1; j >= 0; j--) {
-				y[i] -= R(L_[i][j] * y[j]);
-				y_k_0[i] -= R(L_k_0_[i][j] * y_k_0[j]);
+				y[i] -= L_[i][j] * y[j];
+				y_k_0[i] -= L_k_0_[i][j] * y_k_0[j];
 			}
 		}
 
-		// решаем уравнение Dz = y
+		// solve Dz = y
 		for (int i = 0; i < L_.size(); i++) {
-			y[i] /= R(D_[i][i]);
-			y_k_0[i] /= R(D_k_0_[i][i]);
+			y[i] /= D_[i][i];
+			y_k_0[i] /= D_k_0_[i][i];
 		}
 
-		// решаем уравнение Ltx = z
+		// solve Ltx = z
 		std::vector<double> answer(y.size()), answer_k_0(y_k_0.size());
 		for (int i = y.size() - 1; i >= 0; i--) {
 			answer[i] = y[i];
 			answer_k_0[i] = y_k_0[i];
 			for (int j = i + 1; j < L_.size(); j++) {
-				answer[i] -= R(Lt[i][j] * answer[j]);
-				answer_k_0[i] -= R(Lt_k_0[i][j] * answer_k_0[j]);
+				answer[i] -= Lt[i][j] * answer[j];
+				answer_k_0[i] -= Lt_k_0[i][j] * answer_k_0[j];
 			}
 		}
 
-		// пишем в файл ответы
 		LogVector(answer);
 		LogVector(answer_k_0);
 		LogMatrix(L_);
@@ -282,7 +210,6 @@ public:
 		}
 
 		std::cout << "Errors:" << std::endl << "k = 2:" << CountInfelicity(x_, answer) << std::endl << "k = 0:" << CountInfelicity(x_, answer_k_0);
-		// считаем погрешности
 		std::ofstream fout("logs.txt", std::ios::app);
 		fout << "k = 2:" << CountInfelicity(x_, answer) << std::endl << "k = 0:" << CountInfelicity(x_, answer_k_0);
 		fout.close();
