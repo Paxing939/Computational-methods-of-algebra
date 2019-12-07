@@ -4,13 +4,13 @@
 #include <iomanip>
 #include <fstream>
 
-float R(float x) {
+double R(double x) {
 	int k = 1000;
-	return round(x * k) / (float)k;
+	return round(x * k) / (double)k;
 }
 
-float CountInfelicity(std::vector<float> x_de_ure, std::vector<float> x_de_facto) {
-	float sum_x2 = 0, sum_x = 0;
+double CountInfelicity(std::vector<double> x_de_ure, std::vector<double> x_de_facto) {
+	double sum_x2 = 0, sum_x = 0;
 	for (int i = 0; i < x_de_facto.size(); i++) {
 		sum_x2 += x_de_facto[i] * x_de_facto[i];
 		sum_x += (x_de_facto[i] - x_de_ure[i]) * (x_de_facto[i] - x_de_ure[i]);
@@ -21,7 +21,7 @@ float CountInfelicity(std::vector<float> x_de_ure, std::vector<float> x_de_facto
 	return sum_x / sum_x2;
 }
 
-void LogMatrix(std::vector<std::vector<float>> matrix) {
+void LogMatrix(std::vector<std::vector<double>> matrix) {
 	std::ofstream fout("logs.txt", std::ios::app);
 	for (const auto& vec : matrix) {
 		for (auto& el : vec) {
@@ -33,7 +33,7 @@ void LogMatrix(std::vector<std::vector<float>> matrix) {
 	fout.close();
 }
 
-void LogVector(std::vector<float> vector) {
+void LogVector(std::vector<double> vector) {
 	std::ofstream fout("logs.txt", std::ios::app);
 	for (const auto& el : vector) {
 		fout << el << '\t';
@@ -42,8 +42,8 @@ void LogVector(std::vector<float> vector) {
 	fout.close();
 }
 
-std::vector<std::vector<float>> MultMatrix(std::vector<std::vector<float>> a, std::vector<std::vector<float>> b_) {
-	std::vector<std::vector<float>> c(a.size());
+std::vector<std::vector<double>> MultMatrix(std::vector<std::vector<double>> a, std::vector<std::vector<double>> b_) {
+	std::vector<std::vector<double>> c(a.size());
 	for (int i = 0; i < a.size(); i++) {
 		c[i].resize(b_[i].size());
 		for (int j = 0; j < b_[i].size(); j++) {
@@ -55,7 +55,7 @@ std::vector<std::vector<float>> MultMatrix(std::vector<std::vector<float>> a, st
 	return c;
 }
 
-void PrintMatrix(const std::vector<std::vector<float>>& matrix) {
+void PrintMatrix(const std::vector<std::vector<double>>& matrix) {
 	for (const auto& vec : matrix) {
 		for (const auto& x_ : vec) {
 			std::cout << std::setw(7) << std::setprecision(2) << std::left << x_ << " ";
@@ -64,7 +64,7 @@ void PrintMatrix(const std::vector<std::vector<float>>& matrix) {
 	}
 }
 
-void PrintVector(const std::vector<float>& vector) {
+void PrintVector(const std::vector<double>& vector) {
 	for (const auto& x_ : vector) {
 		std::cout << std::setw(7) << std::setprecision(2) << std::left << x_ << " ";
 	}
@@ -75,8 +75,8 @@ class Matrix {
 public:
 
 	// функция умножения матриц
-	std::vector<float> MultMat(std::vector<float> a, std::vector<std::vector<float>> matrix) {
-		std::vector<float> c(matrix.size());
+	std::vector<double> MultMat(std::vector<double> a, std::vector<std::vector<double>> matrix) {
+		std::vector<double> c(matrix.size());
 
 		for (int i = 0; i < matrix.size(); i++) {
 			c[i] = 0;
@@ -95,9 +95,9 @@ public:
 	Matrix() {
 		srand(time(NULL));
 		// случайное количество элементов матрицы
-		int n = 4;// rand() % 3 + 10;
+		int n = 3;// rand() % 3 + 10;
 
-		matrix_.resize(n, std::vector<float>(n));
+		matrix_.resize(n, std::vector<double>(n));
 		for (auto& line : matrix_) {
 			line.resize(n);
 		}
@@ -111,19 +111,17 @@ public:
 			}
 		}
 		// пишем исходную матрицу в файл
+		matrix_ = { {1,2,3}, {2,1,2}, {3,2,1} };
 		LogMatrix(matrix_);
 		PrintMatrix(matrix_);
 		std::cout << std::endl;
 	}
 
 	void ImplementDanilevski() {
-		std::vector<std::vector<float>> M_i, M_i_1;
+		std::vector<std::vector<double>> M_i, M_i_1;
 		while (true) {
 			for (int i = matrix_.size() - 2; i >= 0; i--) {
-				std::cout << i << std::endl;
-				if (i == 0) {
-					int sfgvds = 1010234;
-				}
+				std::cout << "M_i" << std::endl;
 				M_i = CreateM_i(i);
 				std::cout << std::endl;
 				PrintMatrix(M_i);
@@ -134,7 +132,7 @@ public:
 				fout.close();
 
 				M_i_1 = CreateM_i_1(i);
-				std::cout << std::endl;
+				std::cout << "M_i_1" << std::endl;
 				PrintMatrix(M_i_1);
 				LogMatrix(M_i_1);
 
@@ -143,7 +141,10 @@ public:
 				fout.close();
 
 				matrix_ = MultMatrix(matrix_, M_i);
+				std::cout << "M_i_1 multiply on A" << std::endl;
+				PrintMatrix(matrix_);
 				matrix_ = MultMatrix(M_i_1, matrix_);
+				std::cout << std::endl << "----------------------------------" << std::endl;
 				PrintMatrix(matrix_);
 				LogMatrix(matrix_);
 
@@ -162,8 +163,8 @@ public:
 		}
 	}
 
-	std::vector<std::vector<float>> CreateM_i(int n) {
-		std::vector<std::vector<float>> M_i(matrix_.size(), std::vector<float>(matrix_.size()));
+	std::vector<std::vector<double>> CreateM_i(int n) {
+		std::vector<std::vector<double>> M_i(matrix_.size(), std::vector<double>(matrix_.size()));
 
 		for (int i = 0; i < matrix_.size(); i++) {
 			if (i != n) {
@@ -179,8 +180,8 @@ public:
 		return M_i;
 	}
 
-	std::vector<std::vector<float>> CreateM_i_1(int n) {
-		std::vector<std::vector<float>> M_i_1(matrix_.size(), std::vector<float>(matrix_.size()));
+	std::vector<std::vector<double>> CreateM_i_1(int n) {
+		std::vector<std::vector<double>> M_i_1(matrix_.size(), std::vector<double>(matrix_.size()));
 
 		for (int i = 0; i < matrix_.size(); i++) {
 			if (i != n) {
@@ -193,10 +194,10 @@ public:
 	}
 
 private:
-	std::vector<std::vector<float>> matrix_;
-	std::vector<float> f_, x_, x_curr_;
+	std::vector<std::vector<double>> matrix_;
+	std::vector<double> f_, x_, x_curr_;
 	int k_max_, k_;
-	float E_;
+	double E_;
 };
 
 int main() {
