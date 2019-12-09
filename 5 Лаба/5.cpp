@@ -26,7 +26,7 @@ public:
 	Matrix() {
 		srand(time(NULL));
 		// случайное количество элементов матрицы
-		int n = 4;//rand() % 3 + 310;
+		int n = rand() % 3 + 310;
 
 		matrix_.resize(n, std::vector<double>(n));
 		for (auto& line : matrix_) {
@@ -46,19 +46,19 @@ public:
 		PrintMatrix(matrix_);
 		std::cout << std::endl;
 
-		std::ofstream fout("matrix.txt");
-		fout << "{";
-		for (int i = 0; i < matrix_.size(); i++) {
-			fout << "{";
-			for (int j = 0; j < matrix_.size() - 1; j++) {
-				fout << matrix_[i][j] << ", ";
-			}
-			if (i == matrix_.size() - 1)
-				fout << matrix_[i][matrix_.size() - 1] << "}";
-			else
-				fout << matrix_[i][matrix_.size() - 1] << "},";
-		}
-		fout << "}";
+		//std::ofstream fout("matrix.txt");
+		//fout << "{";
+		//for (int i = 0; i < matrix_.size(); i++) {
+		//	fout << "{";
+		//	for (int j = 0; j < matrix_.size() - 1; j++) {
+		//		fout << matrix_[i][j] << ", ";
+		//	}
+		//	if (i == matrix_.size() - 1)
+		//		fout << matrix_[i][matrix_.size() - 1] << "}";
+		//	else
+		//		fout << matrix_[i][matrix_.size() - 1] << "},";
+		//}
+		//fout << "}";
 	}
 
 	void ImplementDanilevski() {

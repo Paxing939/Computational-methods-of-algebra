@@ -74,7 +74,7 @@ public:
 	Matrix() {
 		srand(time(NULL));
 		// случайное количество элементов матрицы
-		int n = 4;//rand() % 3 + 10;
+		int n = rand() % 3 + 10;
 		// запоминаем числа для не диагональных элементов от -4 до 0
 		std::vector<int> no_diag;
 		for (int i = 0; i < (n * n - n) / 2; i++) {
@@ -113,12 +113,14 @@ public:
 		for (int i = 1; i < matrix_.size(); i++) {
 			matrix_[i][i] = sum_1_col - matrix_[i][0];
 		}
-		matrix_ = { { -23, -18, -35, 28 },
-					{ 5, 10, 5, -9 },
-					{ -49, 12, 25, 16 },
-					{ 26, -48, -42, 21} };
+		//matrix_ = { { -23, -18, -35, 28 },
+		//			{ 5, 10, 5, -9 },
+		//			{ -49, 12, 25, 16 },
+		//			{ 26, -48, -42, 21} };
+
 		// write matrices in the logs.txt
 		LogMatrix(matrix_);
+		PrintMatrix(matrix_);
 	}
 
 	void StartIterations() {
@@ -168,6 +170,7 @@ public:
 			x_2 = MultMat(matrix_, x_1);
 			lamda_simple = Norm(x_2) * Sign(Norm(x_1));
 			lamda_scalar_product = ScalarProduct(x_2, x_1) / ScalarProduct(x_1, x_1);
+			std::cout << "Iteration " << i << ": division  " << lamda_simple << " scalar product " << lamda_scalar_product << std::endl;
 		}
 		std::vector<float> eigenvector_simple = Eigenvectors(x_1, x_2, lamda_simple);
 		std::vector<float> eigenvector_scalar = Eigenvectors(x_1, x_2, lamda_scalar_product);
@@ -175,15 +178,39 @@ public:
 		std::cout << std::endl << std::endl;
 		PrintVector(eigenvector_simple);
 		std::cout << std::endl << std::endl;
-		std::cout << "Eigenvalue by lambda = v / u: " << lamda_simple << std::endl
-				<< "Eigenvalue by lambda <v, u> / <u, u>: " << lamda_scalar_product;
+
+		std::vector<float> check1 = MultMat(matrix_, x_1), check2 = MultMat(matrix_, x_1), sub = x_1;
+		for (int i = 0; i < line_length; i++) {
+			check1[i] -= lamda_simple * x_1[i];
+			check2[i] -= lamda_scalar_product * x_1[i];
+		}
+
+		std::cout << "Check lamda_simple: " << Norm(check1) << std::endl;
+		std::cout << "Check lamda_scalar_product: " << Norm(check2) << std::endl;
 
 		float eigenvalue_30 = CountSecondEigenValue(v_30, v_31, u_30, u_29, lamda_simple);
+		std::vector<float> check_lambda_2 = MultMat(matrix_, x_1);
+		sub = x_1;
+		for (int i = 0; i < line_length; i++) {
+			check_lambda_2[i] -= eigenvalue_30 * x_1[i];
+		}
+		std::cout << "Check eigenvalue_30: " << Norm(check_lambda_2) << std::endl;
+
 		float eigenvalue_50 = CountSecondEigenValue(v_49, v_50, u_49, u_48, lamda_simple);
+		check_lambda_2 = MultMat(matrix_, x_1);
+		sub = x_1;
+		for (int i = 0; i < line_length; i++) {
+			check_lambda_2[i] -= eigenvalue_50 * x_1[i];
+		}
+		std::cout << "Check eigenvalue_50: " << Norm(check_lambda_2) << std::endl;
+
 		float eigenvalue_50_scalar_eigenval = CountSecondEigenValue(v_49, v_50, u_49, u_48, lamda_scalar_product);
-		std::cout << std::endl << std::endl << eigenvalue_30 << "  " << eigenvalue_50 << "  " << eigenvalue_50_scalar_eigenval << std::endl;
-
-
+		check_lambda_2 = MultMat(matrix_, x_1);
+		sub = x_1;
+		for (int i = 0; i < line_length; i++) {
+			check_lambda_2[i] -= eigenvalue_50_scalar_eigenval * x_1[i];
+		}
+		std::cout << "Check eigenvalue_50_scalar_eigenval: " << Norm(check_lambda_2) << std::endl;
 	}
 
 private:
