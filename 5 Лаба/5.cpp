@@ -26,7 +26,7 @@ public:
 	Matrix() {
 		srand(time(NULL));
 		// случайное количество элементов матрицы
-		int n = rand() % 3 + 310;
+		int n = 4;// rand() % 3 + 10;
 
 		matrix_.resize(n, std::vector<double>(n));
 		for (auto& line : matrix_) {
@@ -59,6 +59,11 @@ public:
 		//		fout << matrix_[i][matrix_.size() - 1] << "},";
 		//}
 		//fout << "}";
+				matrix_ = { { -23, -18, -35, 28 },
+					{ 5, 10, 5, -9 },
+					{ -49, 12, 25, 16 },
+					{ 26, -48, -42, 21} };
+		//matrix_ = { {19, 43, -29, 21}, {-46, 49, 5, 41}, {-48, 21, 40, 25}, {44, 47, -46, -31} };
 	}
 
 	void ImplementDanilevski() {
